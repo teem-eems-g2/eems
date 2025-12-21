@@ -2,118 +2,114 @@ import React, { useState, useEffect } from 'react';
 import './ExamInterface.css';
 
 function ExamInterface() {
-  const [timeLeft, setTimeLeft] = useState(45 * 60); // 45 minutes
-  const [answers, setAnswers] = useState({});
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  
-  const questions = [
-    {
-      id: 1,
-      type: 'mcq',
-      text: "What is the capital of France?",
-      options: ["London", "Berlin", "Paris", "Madrid"],
-      correct: "Paris",
-      marks: 1
-    },
-    {
-      id: 2,
-      type: 'truefalse',
-      text: "JavaScript is a statically typed language.",
-      correct: false,
-      marks: 1
-    },
-    {
-      id: 3,
-      type: 'short',
-      text: "Explain the concept of closure in JavaScript.",
-      marks: 5
-    }
-  ];
+  const [examData, setExamData] = useState(null);
+  const [isSubmitted, setIsSubmitted] = useState(false); // NEW: Track submission status
+  const [finalScore, setFinalScore] = useState(0);      // NEW: Store score for display
+  const [answers, setAnswers] = useState(() => {
+    const saved = localStorage.getItem('examAnswers');
+    return saved ? JSON.parse(saved) : {};
+  });
 
-  // Timer countdown
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+
   useEffect(() => {
-    if (timeLeft <= 0) {
+    const savedExam = localStorage.getItem('currentExam');
+    if (savedExam) {
+      const parsed = JSON.parse(savedExam);
+      setExamData(parsed);
+      setTimeLeft(parsed.duration * 60);
+    }
+  }, []);
+
+  // Timer Effect
+  useEffect(() => {
+    // Stop timer if submitted or time runs out
+    if (isSubmitted) return; 
+
+    if (timeLeft <= 0 && examData) {
       handleSubmit();
       return;
     }
 
-    const timer = setInterval(() => {
-      setTimeLeft(prev => prev - 1);
-    }, 1000);
-
+    const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
     return () => clearInterval(timer);
-  }, [timeLeft, answers]);
-
-  // Auto-save every 10 seconds
-  useEffect(() => {
-    const autosave = setInterval(() => {
-      if (Object.keys(answers).length > 0) {
-        console.log('Auto-saving answers...');
-        localStorage.setItem('examAnswers', JSON.stringify(answers));
-      }
-    }, 10000);
-
-    return () => clearInterval(autosave);
-  }, [answers]);
+  }, [timeLeft, examData, isSubmitted]);
 
   const handleAnswer = (questionId, answer) => {
-    setAnswers(prev => ({
-      ...prev,
-      [questionId]: answer
-    }));
+    if (isSubmitted) return; // Prevent changing answers after submit
+    setAnswers(prev => ({ ...prev, [questionId]: answer }));
   };
 
   const handleSubmit = () => {
-    // Calculate score
+    if (isSubmitted) return;
+
     let score = 0;
-    const totalPossibleMarks = questions.reduce((acc, q) => acc + q.marks, 0);
+    const questions = examData.questions;
+    
     questions.forEach(q => {
-      if (q.type === 'mcq' && answers[q.id] === q.correct) score += q.marks;
-      if (q.type === 'truefalse' && answers[q.id] === q.correct) score += q.marks;
+      // Logic for MCQ, True/False, and Numeric
+      if ((q.type === 'mcq' || q.type === 'truefalse' || q.type === 'numeric') && 
+          answers[q.id]?.toString().trim() === q.correct?.toString().trim()) {
+        score += q.marks;
+      }
     });
     
-    alert(`Exam submitted! Score: ${score}/7`);
+    setFinalScore(score);
+    setIsSubmitted(true); // Stop the timer and change view
+
+    // Clear local storage progress
     localStorage.removeItem('examAnswers');
+    
+    // Optional: Keep user logged in until they click a "Close" button on the result screen
   };
 
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    window.location.href = '/';
   };
 
-  const currentQ = questions[currentQuestion];
+  if (!examData) return <div className="loading">No active exam found.</div>;
+
+  // NEW: Result View after clicking Submit
+  if (isSubmitted) {
+    return (
+      <div className="result-container">
+        <h2>Exam Completed!</h2>
+        <div className="score-circle">
+          <h1>{finalScore} / {examData.totalMarks}</h1>
+          <p>Total Marks Earned</p>
+        </div>
+        <p>Short answer questions will be reviewed by your instructor.</p>
+        <button className="logout-btn" onClick={handleLogout}>Logout & Exit</button>
+      </div>
+    );
+  }
+
+  // Standard Exam View
+  const currentQ = examData.questions[currentQuestion];
 
   return (
     <div className="exam-container">
       <div className="exam-header">
-        <h2>Mathematics Final Exam</h2>
-        <div className="timer">
-          ⏰ Time Remaining: <strong>{formatTime(timeLeft)}</strong>
+        <h2>{examData.title}</h2>
+        <div className={`timer ${timeLeft < 300 ? 'warning' : ''}`}>
+          ⏰ Time Left: <strong>{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</strong>
         </div>
       </div>
 
-      <div className="progress-bar">
-        <div 
-          className="progress" 
-          style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
-        ></div>
-      </div>
-
       <div className="question-container">
-        <h3>Question {currentQuestion + 1} of {questions.length}</h3>
+        <div className="q-header">
+          <h3>Question {currentQuestion + 1} of {examData.questions.length}</h3>
+          <span className="marks-tag">{currentQ.marks} Marks</span>
+        </div>
         <p className="question-text">{currentQ.text}</p>
 
         {currentQ.type === 'mcq' && (
           <div className="options">
             {currentQ.options.map((option, idx) => (
               <label key={idx} className="option">
-                <input
-                  type="radio"
-                  name={`q${currentQ.id}`}
-                  checked={answers[currentQ.id] === option}
-                  onChange={() => handleAnswer(currentQ.id, option)}
-                />
+                <input type="radio" name="q-option" checked={answers[currentQ.id] === option} onChange={() => handleAnswer(currentQ.id, option)} />
                 <span>{option}</span>
               </label>
             ))}
@@ -122,68 +118,34 @@ function ExamInterface() {
 
         {currentQ.type === 'truefalse' && (
           <div className="options">
-            <label className="option">
-              <input
-                type="radio"
-                name={`q${currentQ.id}`}
-                checked={answers[currentQ.id] === true}
-                onChange={() => handleAnswer(currentQ.id, true)}
-              />
-              <span>True</span>
-            </label>
-            <label className="option">
-              <input
-                type="radio"
-                name={`q${currentQ.id}`}
-                checked={answers[currentQ.id] === false}
-                onChange={() => handleAnswer(currentQ.id, false)}
-              />
-              <span>False</span>
-            </label>
+            {["true", "false"].map((val) => (
+              <label key={val} className="option">
+                <input type="radio" name="q-option" checked={answers[currentQ.id] === (val === "true")} onChange={() => handleAnswer(currentQ.id, val === "true")} />
+                <span>{val.charAt(0).toUpperCase() + val.slice(1)}</span>
+              </label>
+            ))}
           </div>
         )}
+
         {currentQ.type === 'short' && (
-          <textarea
-            className="short-answer"
-            value={answers[currentQ.id] || ''}
-            onChange={(e) => handleAnswer(currentQ.id, e.target.value)}
-            placeholder="Type your answer here..."
-            rows={4}
-          />
+          <textarea className="short-answer" value={answers[currentQ.id] || ''} onChange={(e) => handleAnswer(currentQ.id, e.target.value)} placeholder="Type your answer here..." rows={6} />
+        )}
+
+        {(currentQ.type === 'numeric') && (
+            <input type="number" className="numeric-input" value={answers[currentQ.id] || ''} onChange={(e) => handleAnswer(currentQ.id, e.target.value)} placeholder="Enter numeric value" />
         )}
 
         <div className="navigation">
-          <button 
-            onClick={() => setCurrentQuestion(prev => Math.max(0, prev - 1))}
-            disabled={currentQuestion === 0}
-          >
-            ← Previous
-          </button>
+          <button onClick={() => setCurrentQuestion(prev => prev - 1)} disabled={currentQuestion === 0}>← Previous</button>
           
-          <span>Auto-save: <span className="autosave-status">ON</span> (Every 10s)</span>
-          
-          {currentQuestion < questions.length - 1 ? (
-            <button onClick={() => setCurrentQuestion(prev => prev + 1)}>
-              Next →
-            </button>
+          {currentQuestion < examData.questions.length - 1 ? (
+            <button onClick={() => setCurrentQuestion(prev => prev + 1)}>Next →</button>
           ) : (
-            <button className="submit-btn" onClick={handleSubmit}>
-              ✅ Submit Exam
-            </button>
+            <button className="submit-btn" onClick={() => {
+              if(window.confirm("Are you sure you want to submit?")) handleSubmit();
+            }}>✅ Submit Exam</button>
           )}
         </div>
-      </div>
-
-      <div className="question-list">
-        {questions.map((q, idx) => (
-          <button
-            key={q.id}
-            className={`q-btn ${currentQuestion === idx ? 'active' : ''} ${answers[q.id] ? 'answered' : ''}`}
-            onClick={() => setCurrentQuestion(idx)}
-          >
-            Q{idx + 1}
-          </button>
-        ))}
       </div>
     </div>
   );

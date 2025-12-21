@@ -316,3 +316,36 @@
   padding: 50px;
   font-size: 18px;
 }
+/* Add at the end of Dashboard.css */
+.added-questions {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #3498db;
+}
+
+.question-preview {
+  padding: 10px;
+  margin: 8px 0;
+  background: white;
+  border-radius: 5px;
+  border: 1px solid #dee2e6;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.q-type {
+  background: #e9ecef;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.q-marks {
+  margin-left: auto;
+  color: #2ecc71;
+  font-weight: bold;
+}

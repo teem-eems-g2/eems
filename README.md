@@ -52,4 +52,4 @@
    # Run in PostgreSQL
    ```bash
 psql -U postgres -f database/schema.sql
-```
+```cha

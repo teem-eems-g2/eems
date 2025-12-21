@@ -84,5 +84,5 @@ app.post("/api/grade/auto", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log('🚀 EEMS Backend running on http://localhost:${PORT}');
+  console.log("🚀 EEMS Backend running on http://localhost:" + PORT);
 });
