@@ -9,113 +9,80 @@ function Dashboard() {
   const [duration, setDuration] = useState(45);
   const [exams, setExams] = useState([]);
 
-  // Load user and existing exams on start
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     const savedExams = JSON.parse(localStorage.getItem('allExams') || '[]');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+    if (savedUser) setUser(JSON.parse(savedUser));
     setExams(savedExams);
   }, []);
 
-  // Reset questions when switching to create tab
-  useEffect(() => {
-    if (activeTab === 'create') {
-      setQuestions([]);
-      setExamTitle("");
-      setDuration(45);
-    }
-  }, [activeTab]);
+  // Helper to update marks in the preview list
+  const updateQuestionMark = (id, newMark) => {
+    setQuestions(questions.map(q => 
+      q.id === id ? { ...q, marks: parseInt(newMark) || 0 } : q
+    ));
+  };
 
-  // Add question function (Fixed with window. prefix for ESLint)
   const addQuestion = (type) => {
     let newQuestion;
     const questionId = Date.now();
 
-    switch (type) {
+    switch(type) {
       case 'mcq':
         newQuestion = {
           id: questionId,
           type: 'mcq',
-          text: window.prompt("Enter MCQ question:", "What is the capital of France?") || "New MCQ Question",
-          options: (window.prompt("Enter options (comma separated):", "London,Berlin,Paris,Madrid") || "").split(",") || ["Option A", "Option B", "Option C", "Option D"],
-          correct: window.prompt("Enter correct option:", "Paris") || "Option A",
-          marks: parseInt(window.prompt("Enter marks:", "1")) || 1
+          text: window.prompt("Enter MCQ question:") || "New Question",
+          options: (window.prompt("Options (comma separated):") || "A,B,C,D").split(","),
+          correct: window.prompt("Correct option:"),
+          marks: 1
         };
         break;
       case 'truefalse':
         newQuestion = {
           id: questionId,
           type: 'truefalse',
-          text: window.prompt("Enter True/False statement:", "JS is awesome.") || "New Statement",
-          correct: window.confirm("Is this statement TRUE? (OK=True, Cancel=False)"),
-          marks: parseInt(window.prompt("Enter marks:", "1")) || 1
+          text: window.prompt("Enter Statement:") || "Statement",
+          correct: window.confirm("Is it True?"),
+          marks: 1
         };
         break;
       case 'short':
         newQuestion = {
           id: questionId,
           type: 'short',
-          text: window.prompt("Enter Short Answer question:") || "New Short Answer Question",
-          marks: parseInt(window.prompt("Enter marks:", "5")) || 5
+          text: window.prompt("Enter Question:") || "Short Question",
+          marks: 5
         };
         break;
-      case 'numeric':
-        newQuestion = {
-          id: questionId,
-          type: 'numeric',
-          text: window.prompt("Enter Numeric question:") || "New Numeric Question",
-          correct: parseInt(window.prompt("Enter correct answer:", "0")) || 0,
-          marks: parseInt(window.prompt("Enter marks:", "2")) || 2
-        };
-        break;
-      default:
-        return;
+      default: return;
     }
-
-    setQuestions(prev => {
-      const updated = [...prev, newQuestion];
-      window.alert(`Added ${type} question!`);
-      return updated;
-    });
+    setQuestions([...questions, newQuestion]);
   };
 
   const handleCreateExam = () => {
     if (questions.length === 0) {
-      window.alert("Please add at least one question!");
+      window.alert("Add questions first!");
       return;
     }
-
+    
     const examData = {
       id: Date.now(),
       title: examTitle || "Untitled Exam",
-      duration: parseInt(duration) || 45,
-      totalMarks: questions.reduce((sum, q) => sum + (Number(q.marks) || 0), 0),
+      duration: parseInt(duration),
+      totalMarks: questions.reduce((sum, q) => sum + q.marks, 0),
       questions: questions,
-      createdBy: user?.email || "Guest",
+      createdBy: user?.email,
       createdAt: new Date().toISOString()
     };
 
-    // Save to allExams list and currentExam for student
     const updatedExams = [...exams, examData];
     setExams(updatedExams);
     localStorage.setItem('allExams', JSON.stringify(updatedExams));
     localStorage.setItem('currentExam', JSON.stringify(examData));
-
-    window.alert(`✅ Exam "${examData.title}" created successfully! Switching to student view...`);
-
-    // Logout and redirect
-    localStorage.setItem('user', JSON.stringify({ email: 'student@test.com', role: 'student' }));
-    window.location.href = '/student';
-  };
-
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this exam?")) {
-      const updated = exams.filter(e => e.id !== id);
-      setExams(updated);
-      localStorage.setItem('allExams', JSON.stringify(updated));
-    }
+    
+    window.alert("✅ Exam Published Successfully! It is now available for students.");
+    // REMOVED: The window.location.href redirect so instructor stays here
   };
 
   const handleLogout = () => {
@@ -127,43 +94,33 @@ function Dashboard() {
 
   return (
     <div className="dashboard-container">
-      {/* SIDEBAR SECTION */}
       <div className="sidebar">
         <div className="user-info">
           <h3>👤 {user.email}</h3>
           <p className="role-badge">{user.role.toUpperCase()}</p>
         </div>
-
         <nav className="nav-menu">
           <button className={activeTab === 'exams' ? 'active' : ''} onClick={() => setActiveTab('exams')}>📚 My Exams</button>
           <button className={activeTab === 'create' ? 'active' : ''} onClick={() => setActiveTab('create')}>➕ Create Exam</button>
           <button className={activeTab === 'grading' ? 'active' : ''} onClick={() => setActiveTab('grading')}>📝 Grading</button>
-          <button className={activeTab === 'reports' ? 'active' : ''} onClick={() => setActiveTab('reports')}>📊 Reports</button>
         </nav>
-
         <button className="logout-btn" onClick={handleLogout}>Logout</button>
       </div>
 
-      {/* MAIN CONTENT SECTION */}
       <div className="main-content">
         <header className="dashboard-header">
           <h1>EEMS Dashboard</h1>
           <p>Welcome back, {user.role}!</p>
         </header>
 
-        {/* TABS CONTENT */}
         {activeTab === 'exams' && (
           <div className="exams-section">
             <h2>My Exams</h2>
             <div className="exams-grid">
-              {exams.length === 0 ? <p>No exams created yet.</p> : exams.map(exam => (
+              {exams.map(exam => (
                 <div key={exam.id} className="exam-card">
                   <h3>{exam.title}</h3>
-                  <p>Questions: {exam.questions.length}</p>
-                  <p>Total Marks: {exam.totalMarks}</p>
-                  <div className="exam-actions">
-                    <button className="action-btn delete" onClick={() => handleDelete(exam.id)}>Delete</button>
-                  </div>
+                  <p>Questions: {exam.questions.length} | Marks: {exam.totalMarks}</p>
                 </div>
               ))}
             </div>
@@ -177,55 +134,57 @@ function Dashboard() {
               <input type="text" placeholder="Exam Title" value={examTitle} onChange={(e) => setExamTitle(e.target.value)} />
               <div className="form-row">
                 <input type="number" placeholder="Duration (mins)" value={duration} onChange={(e) => setDuration(e.target.value)} />
-                <input type="number" placeholder="Total Marks" value={questions.reduce((sum, q) => sum + (Number(q.marks) || 0), 0)} readOnly />
+                <div className="total-marks-display">Total Marks: {questions.reduce((sum, q) => sum + q.marks, 0)}</div>
               </div>
-
+              
               <div className="question-types">
                 <button type="button" onClick={() => addQuestion('mcq')}>Add MCQ</button>
                 <button type="button" onClick={() => addQuestion('truefalse')}>Add True/False</button>
                 <button type="button" onClick={() => addQuestion('short')}>Add Short Answer</button>
-                <button type="button" onClick={() => addQuestion('numeric')}>Add Numeric</button>
               </div>
 
-              {/* INSTRUCTOR REVIEW AREA */}
+              {/* PREVIEW SECTION FOR INSTRUCTOR */}
               {questions.length > 0 && (
                 <div className="added-questions">
-                  <h4>Questions Added ({questions.length})</h4>
-                  {questions.map((q, index) => (
-                    <div key={q.id} className="question-preview">
-                      <strong>Q{index + 1}:</strong> {q.text} 
-                      <button className="btn-small-del" onClick={() => setQuestions(questions.filter(item => item.id !== q.id))}>x</button>
-                    </div>
-                  ))}
+                  <h4>Exam Preview (Edit Marks/Remove)</h4>
+                  <table className="preview-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Question</th>
+                        <th>Type</th>
+                        <th>Marks</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {questions.map((q, index) => (
+                        <tr key={q.id}>
+                          <td>{index + 1}</td>
+                          <td>{q.text}</td>
+                          <td>{q.type}</td>
+                          <td>
+                            <input 
+                              type="number" 
+                              className="edit-mark-input"
+                              value={q.marks} 
+                              onChange={(e) => updateQuestionMark(q.id, e.target.value)} 
+                            />
+                          </td>
+                          <td>
+                            <button className="remove-btn" onClick={() => setQuestions(questions.filter(item => item.id !== q.id))}>Remove</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
-
+              
               <div className="form-actions">
                 <button type="button" className="publish-btn" onClick={handleCreateExam}>Publish Exam</button>
               </div>
             </form>
-          </div>
-        )}
-
-        {activeTab === 'grading' && (
-          <div className="grading-section">
-            <h2>Manual Grading</h2>
-            <div className="submission-card">
-              <h4>Student: John Doe</h4>
-              <p>Answer: "An object stays at rest..."</p>
-              <input type="number" placeholder="Marks" />
-              <button className="grade-btn">Save Grade</button>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'reports' && (
-          <div className="reports-section">
-            <h2>Reports & Analytics</h2>
-            <div className="report-card">
-              <h3>📈 Performance</h3>
-              <p>Average Score: 78%</p>
-            </div>
           </div>
         )}
       </div>
