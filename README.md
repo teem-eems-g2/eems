@@ -1,5 +1,5 @@
 
-# EEMS – Electronic Exam and Management System
+# EEMS – Electronic Exam Management System
 
 EEMS is a comprehensive **web-based platform** designed to streamline the **exam creation, administration, and grading process** for educational institutions.  
 The system provides a seamless experience for **instructors, students, and graders** with **role-based access control**.
