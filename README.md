@@ -1,11 +1,15 @@
-# EEMS - Exam Evaluation and Management System
 
-EEMS is a comprehensive web-based platform designed to streamline the exam creation, administration, and grading process for educational institutions. The system provides a seamless experience for instructors, students, and graders with role-based access control.
+# EEMS – Exam Evaluation and Management System
+
+EEMS is a comprehensive **web-based platform** designed to streamline the **exam creation, administration, and grading process** for educational institutions.  
+The system provides a seamless experience for **instructors, students, and graders** with **role-based access control**.
+
+---
 
 ## Features
 
 ### For Instructors
-- Create and manage exams with various question types (MCQ, True/False, Numeric, Short Answer)
+- Create and manage exams with multiple question types (MCQ, True/False, Numeric, Short Answer)
 - Set exam duration, total marks, and scheduling
 - Publish exams and monitor student submissions
 - View and analyze exam results
@@ -20,146 +24,181 @@ EEMS is a comprehensive web-based platform designed to streamline the exam creat
 - Provide feedback on student submissions
 - Manage grading workload
 
+---
+
 ## Tech Stack
 
 ### Frontend
-- React 18
-- React Router v6
-- CSS Modules
-- Axios for API communication
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![React Router](https://img.shields.io/badge/React_Router-v6-CA4245?logo=react-router&logoColor=white)
+![CSS Modules](https://img.shields.io/badge/CSS_Modules-blue?logo=css3&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-5A29E4?logo=axios&logoColor=white)
 
 ### Backend
-- Node.js with Express
-- PostgreSQL Database
-- JWT Authentication
-- RESTful API
+![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-000000?logo=express&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-Authentication-000000?logo=jsonwebtokens&logoColor=white)
+![REST API](https://img.shields.io/badge/REST-API-02569B)
 
 ### Testing
-- Jest
-- React Testing Library
-- Supertest
+![Jest](https://img.shields.io/badge/Jest-C21325?logo=jest&logoColor=white)
+![React Testing Library](https://img.shields.io/badge/React_Testing_Library-E33332?logo=testing-library&logoColor=white)
+![Supertest](https://img.shields.io/badge/Supertest-333333)
+
+---
 
 ## Quick Setup (Local Development)
 
 ### Prerequisites
-- Node.js (v16 or higher)
-- PostgreSQL (v12 or higher)
-- npm (v8 or higher) or yarn
+![Node.js](https://img.shields.io/badge/Node.js-v16+-339933?logo=node.js&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-v12+-4169E1?logo=postgresql&logoColor=white)
+![npm](https://img.shields.io/badge/npm-v8+-CB3837?logo=npm&logoColor=white)
 
-### Installation
+---
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/teem-eems-g2/eems.git
-   cd eems
-   ```
+## Installation
 
-2. **Set up the database**
-   - Create a new PostgreSQL database
-   - Run the schema script:
-     ```bash
-     psql -U postgres -f database/schema.sql
-     ```
+### 1. Clone the Repository
+```bash
+git clone https://github.com/teem-eems-g2/eems.git
+cd eems
+````
 
-3. **Configure environment variables**
-   Create `.env` files in both frontend and backend directories with the required environment variables.
+### 2. Database Setup
 
-4. **Install dependencies**
-   ```bash
-   # Install backend dependencies
-   cd backend
-   npm install
-   
-   # Install frontend dependencies
-   cd ../frontend
-   npm install
-   ```
+```bash
+psql -U postgres -f database/schema.sql
+```
 
-### Running the Application
+### 3. Environment Configuration
 
-1. **Start the backend server**
-   ```bash
-   cd backend
-   npm start
-   ```
-   Server runs on: http://localhost:5000
+Create `.env` files in both **backend** and **frontend** directories and add the required environment variables.
 
-2. **Start the frontend development server**
-   ```bash
-   cd frontend
-   npm start
-   ```
-   App runs on: http://localhost:3000
+### 4. Install Dependencies
+
+```bash
+# Backend
+cd backend
+npm install
+
+# Frontend
+cd ../frontend
+npm install
+```
+
+---
+
+## Running the Application
+
+### Backend Server
+
+```bash
+cd backend
+npm start
+```
+
+Server runs on: **[http://localhost:5000](http://localhost:5000)**
+
+### Frontend Server
+
+```bash
+cd frontend
+npm start
+```
+
+Application runs on: **[http://localhost:3000](http://localhost:3000)**
+
+---
 
 ## Project Structure
 
 ```
 eems/
-├── backend/               # Backend server code
-│   ├── config/           # Configuration files
-│   ├── models/           # Database models
-│   ├── routes/           # API routes
-│   └── server.js         # Main server file
+├── backend/
+│   ├── config/
+│   ├── models/
+│   ├── routes/
+│   └── server.js
 │
-├── frontend/             # Frontend React application
-│   ├── public/           # Static files
+├── frontend/
+│   ├── public/
 │   └── src/
-│       ├── components/   # React components
-│       ├── services/     # API services
-│       └── App.js        # Main React component
+│       ├── components/
+│       ├── services/
+│       └── App.js
 │
-├── database/             # Database schema and migrations
-│   └── schema.sql        # Database schema
+├── database/
+│   └── schema.sql
 │
-└── tests/                # Test files
-    ├── backend/         # Backend tests
-    └── frontend/        # Frontend tests
+└── tests/
+    ├── backend/
+    └── frontend/
 ```
+
+---
 
 ## API Documentation
 
-The API documentation is available at `/api-docs` when the backend server is running.
+Available at:
+
+```
+http://localhost:5000/api-docs
+```
+
+---
 
 ## Testing
 
 ### Backend Tests
+
 ```bash
 cd backend
 npm test
 ```
 
 ### Frontend Tests
+
 ```bash
 cd frontend
 npm test
 ```
 
+---
+
 ## Team Members
 
-| Name | Role | Student ID |
-| :--- | :--- | :--- |
-| **Solomon Fentaw** | Project Manager | ugr/188697/16 |
-| **Sofani Gidey** | Lead Developer | ugr/189995/16 |
-| **Samrawit Asmelash** | QA/Testing Lead | ugr/188625/16 |
-| **Aynalem Atsbeha** | Documentation Lead | ugr/189510/16 |
-| **Yoseph Hadush Tela** | Backend Developer | ugr/188832/16 |
-| **Gidena Mehari** | Frontend Developer | ugr/188188/16 |
-| **Haftu Moges** | Database Engineer | ugr/188225/16 |
+| Name               | Role               | Student ID    |
+| ------------------ | ------------------ | ------------- |
+| Solomon Fentaw     | Project Manager    | UGR/188697/16 |
+| Sofani Gidey       | Lead Developer     | UGR/189995/16 |
+| Samrawit Asmelash  | QA / Testing Lead  | UGR/188625/16 |
+| Aynalem Atsbeha    | Documentation Lead | UGR/189510/16 |
+| Yoseph Hadush Tela | Backend Developer  | UGR/188832/16 |
+| Gidena Mehari      | Frontend Developer | UGR/188188/16 |
+| Haftu Moges        | Database Engineer  | UGR/188225/16 |
+
+---
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create a feature branch (`git checkout -b feature/YourFeature`)
+3. Commit your changes
+4. Push to the branch
 5. Open a Pull Request
+
+---
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the **MIT License**.
+
+---
 
 ## Acknowledgments
 
-- Hat tip to anyone whose code was used
-- Inspiration
-- etc.
+* Software Engineering Course Instructors
+* Open-source community
+* Project contributors
+
