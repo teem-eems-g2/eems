@@ -11,7 +11,7 @@
 
 | **Solomon Fentaw** | Project Manager | ugr/188697/16 |
 
-| **Sofani Gidey** | Lead Developer | ugr/189995/16 |
+| **Sofani  Gidey** | Lead Developer | ugr/189995/16 |
 
 | **Samrawit Asmelash** | QA/Testing Lead | ugr/188625/16 |
 
