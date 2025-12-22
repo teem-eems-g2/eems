@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import './Dashboard.css';
 
 function Dashboard() {
+  const [searchParams] = useSearchParams();
+  const [editMode, setEditMode] = useState(false);
+  const [editingExamId, setEditingExamId] = useState(null);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('exams');
   const [questions, setQuestions] = useState([]);
   const [examTitle, setExamTitle] = useState("");
   const [duration, setDuration] = useState(45);
   const [exams, setExams] = useState([]);
+  const [grades, setGrades] = useState(() => {
+    return JSON.parse(localStorage.getItem('grades') || '{}');
+  });
+  const [currentGrade, setCurrentGrade] = useState('');
+  const [saveStatus, setSaveStatus] = useState('');
 
   // Load user and existing exams on start
   useEffect(() => {
@@ -17,16 +26,81 @@ function Dashboard() {
       setUser(JSON.parse(savedUser));
     }
     setExams(savedExams);
-  }, []);
 
-  // Reset questions when switching to create tab
+    // Check for edit mode from URL
+    const editExamId = searchParams.get('editExamId');
+    if (editExamId) {
+      const examToEdit = savedExams.find(exam => exam.id === parseInt(editExamId));
+      if (examToEdit) {
+        // Only update if we're not already editing this exam
+        if (parseInt(editExamId) !== editingExamId) {
+          setEditMode(true);
+          setEditingExamId(parseInt(editExamId));
+          setExamTitle(examToEdit.title);
+          setDuration(examToEdit.duration);
+          setQuestions([...examToEdit.questions]); // Create a new array to ensure re-render
+          setActiveTab('create');
+        }
+      }
+    }
+  }, [searchParams, editingExamId]);
+
+  // Reset form when explicitly switching to create mode (not when in edit mode)
   useEffect(() => {
-    if (activeTab === 'create') {
+    const editExamId = searchParams.get('editExamId');
+    if (activeTab === 'create' && !editExamId && !editingExamId) {
       setQuestions([]);
       setExamTitle("");
       setDuration(45);
+      setEditMode(false);
+      setEditingExamId(null);
     }
-  }, [activeTab]);
+  }, [activeTab, searchParams, editingExamId]);
+
+  // Function to handle editing an existing question
+  const handleEditQuestion = (questionId) => {
+    const questionToEdit = questions.find(q => q.id === questionId);
+    if (!questionToEdit) return;
+
+    if (window.confirm('Edit this question?')) {
+      // Remove the question first
+      const updatedQuestions = questions.filter(q => q.id !== questionId);
+      setQuestions(updatedQuestions);
+
+      // Re-add it with the same ID
+      const newQuestion = { ...questionToEdit };
+      
+      // Show appropriate prompt based on question type
+      switch (questionToEdit.type) {
+        case 'mcq':
+          newQuestion.text = window.prompt("Edit MCQ question:", questionToEdit.text) || questionToEdit.text;
+          newQuestion.options = (window.prompt("Edit options (comma separated):", questionToEdit.options.join(',')) || '').split(',').map(opt => opt.trim());
+          newQuestion.correct = window.prompt("Edit correct option:", questionToEdit.correct) || questionToEdit.correct;
+          newQuestion.marks = parseInt(window.prompt("Edit marks:", questionToEdit.marks)) || questionToEdit.marks;
+          break;
+        case 'truefalse':
+          newQuestion.text = window.prompt("Edit True/False statement:", questionToEdit.text) || questionToEdit.text;
+          newQuestion.correct = window.confirm("Is this statement TRUE? (OK=True, Cancel=False)");
+          newQuestion.marks = parseInt(window.prompt("Edit marks:", questionToEdit.marks)) || questionToEdit.marks;
+          break;
+        case 'short':
+          newQuestion.text = window.prompt("Edit Short Answer question:", questionToEdit.text) || questionToEdit.text;
+          newQuestion.answer = window.prompt("Edit the expected answer:", questionToEdit.answer) || questionToEdit.answer;
+          newQuestion.marks = parseInt(window.prompt("Edit marks:", questionToEdit.marks)) || questionToEdit.marks;
+          break;
+        case 'numeric':
+          newQuestion.text = window.prompt("Edit Numeric question:", questionToEdit.text) || questionToEdit.text;
+          newQuestion.correct = parseInt(window.prompt("Edit correct answer:", questionToEdit.correct)) || questionToEdit.correct;
+          newQuestion.marks = parseInt(window.prompt("Edit marks:", questionToEdit.marks)) || questionToEdit.marks;
+          break;
+        default:
+          return;
+      }
+
+      // Add the edited question back
+      setQuestions([...updatedQuestions, newQuestion]);
+    }
+  };
 
   // Add question function (Fixed with window. prefix for ESLint)
   const addQuestion = (type) => {
@@ -58,6 +132,7 @@ function Dashboard() {
           id: questionId,
           type: 'short',
           text: window.prompt("Enter Short Answer question:") || "New Short Answer Question",
+          answer: window.prompt("Enter the expected answer:") || "Expected answer",
           marks: parseInt(window.prompt("Enter marks:", "5")) || 5
         };
         break;
@@ -81,46 +156,122 @@ function Dashboard() {
     });
   };
 
-  const handleCreateExam = () => {
+  const saveExam = () => {
     if (questions.length === 0) {
       window.alert("Please add at least one question!");
       return;
     }
 
     const examData = {
-      id: Date.now(),
+      id: editMode ? editingExamId : Date.now(),
       title: examTitle || "Untitled Exam",
       duration: parseInt(duration) || 45,
       totalMarks: questions.reduce((sum, q) => sum + (Number(q.marks) || 0), 0),
       questions: questions,
       createdBy: user?.email || "Guest",
-      createdAt: new Date().toISOString()
+      createdAt: editMode 
+        ? exams.find(e => e.id === editingExamId)?.createdAt || new Date().toISOString()
+        : new Date().toISOString()
     };
 
-    // Save to allExams list and currentExam for student
-    const updatedExams = [...exams, examData];
+    // Update or add exam
+    let updatedExams;
+    if (editMode) {
+      updatedExams = exams.map(exam => 
+        exam.id === editingExamId ? examData : exam
+      );
+    } else {
+      updatedExams = [...exams, examData];
+    }
+    
     setExams(updatedExams);
     localStorage.setItem('allExams', JSON.stringify(updatedExams));
-    localStorage.setItem('currentExam', JSON.stringify(examData));
-
-    window.alert(`✅ Exam "${examData.title}" created successfully! Switching to student view...`);
-
-    // Logout and redirect
-    localStorage.setItem('user', JSON.stringify({ email: 'student@test.com', role: 'student' }));
-    window.location.href = '/student';
+    
+    // Reset form
+    setQuestions([]);
+    setExamTitle("");
+    setDuration(45);
+    setEditMode(false);
+    setEditingExamId(null);
+    
+    window.alert(`✅ Exam "${examData.title}" ${editMode ? 'updated' : 'created'} successfully!`);
+    
+    // Switch to exams tab to view the exam
+    setActiveTab('exams');
   };
+
+  const handleCreateExam = saveExam;
+  const handleUpdateExam = saveExam;
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this exam?")) {
       const updated = exams.filter(e => e.id !== id);
-      setExams(updated);
-      localStorage.setItem('allExams', JSON.stringify(updated));
+      return;
     }
+    
+    const studentId = 'solomon_fentaw'; // In a real app, this would be dynamic
+    const newGrades = {
+      ...grades,
+      [studentId]: {
+        ...grades[studentId],
+        'physics_question_1': {
+          answer: "An object stays at rest...",
+          grade: parseFloat(currentGrade),
+          maxMarks: 10,
+          feedback: '',
+          gradedAt: new Date().toISOString()
+        }
+      }
+    };
+    
+    // Save to localStorage
+    localStorage.setItem('grades', JSON.stringify(newGrades));
+    setGrades(newGrades);
+    setSaveStatus('Grade saved successfully!');
+    
+    // Clear status after 3 seconds
+    setTimeout(() => setSaveStatus(''), 3000);
   };
 
   const handleLogout = () => {
+    // Clear all user-related data from localStorage
     localStorage.removeItem('user');
+    localStorage.removeItem('allExams');
+    localStorage.removeItem('grades');
+    localStorage.removeItem('studentName');
+    
+    // Reset application state
+    setUser(null);
+    setExams([]);
+    setGrades({});
+    
+    // Redirect to login page
     window.location.href = '/';
+  };
+
+  const handleSaveGrade = () => {
+    const studentId = 'solomon_fentaw';
+    const newGrades = {
+      ...grades,
+      [studentId]: {
+        ...grades[studentId],
+        'physics_question_1': {
+          answer: "An object stays at rest...",
+          grade: parseFloat(currentGrade),
+          maxMarks: 10,
+          feedback: '',
+          gradedAt: new Date().toISOString()
+        }
+      }
+    };
+    
+    // Save to localStorage
+    localStorage.setItem('grades', JSON.stringify(newGrades));
+    setGrades(newGrades);
+    setSaveStatus('Grade saved successfully!');
+    
+    // Clear status after 3 seconds
+    setTimeout(() => setSaveStatus(''), 3000);
   };
 
   if (!user) return <div className="no-user">Please log in first</div>;
@@ -148,7 +299,7 @@ function Dashboard() {
       <div className="main-content">
         <header className="dashboard-header">
           <h1>EEMS Dashboard</h1>
-          <p>Welcome back, {user.role}!</p>
+          <p>Welcome, {user.role}!</p>
         </header>
 
         {/* TABS CONTENT */}
@@ -162,7 +313,21 @@ function Dashboard() {
                   <p>Questions: {exam.questions.length}</p>
                   <p>Total Marks: {exam.totalMarks}</p>
                   <div className="exam-actions">
-                    <button className="action-btn delete" onClick={() => handleDelete(exam.id)}>Delete</button>
+                    <div className="exam-actions">
+                      <button className="action-btn edit" onClick={(e) => {
+                        e.stopPropagation();
+                        setEditMode(true);
+                        setEditingExamId(exam.id);
+                        setExamTitle(exam.title);
+                        setDuration(exam.duration);
+                        setQuestions([...exam.questions]); // Create a new array to ensure re-render
+                        setActiveTab('create');
+                      }}>Edit</button>
+                      <button className="action-btn delete" onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(exam.id);
+                      }}>Delete</button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -172,7 +337,10 @@ function Dashboard() {
 
         {activeTab === 'create' && (
           <div className="create-exam">
-            <h2>Create New Exam</h2>
+            <div className="exam-header">
+              <h2>{editMode ? 'Edit Exam' : 'Create New Exam'}</h2>
+              {editMode && <span className="edit-badge">Editing Mode</span>}
+            </div>
             <form className="exam-form" onSubmit={(e) => e.preventDefault()}>
               <input type="text" placeholder="Exam Title" value={examTitle} onChange={(e) => setExamTitle(e.target.value)} />
               <div className="form-row">
@@ -193,15 +361,49 @@ function Dashboard() {
                   <h4>Questions Added ({questions.length})</h4>
                   {questions.map((q, index) => (
                     <div key={q.id} className="question-preview">
-                      <strong>Q{index + 1}:</strong> {q.text} 
-                      <button className="btn-small-del" onClick={() => setQuestions(questions.filter(item => item.id !== q.id))}>x</button>
+                      <div className="question-content">
+                        <strong>Q{index + 1}:</strong> {q.text} 
+                        <span className="question-marks">{q.marks} marks</span>
+                      </div>
+                      <div className="question-actions">
+                        <button className="btn-edit" onClick={() => handleEditQuestion(q.id)}>✏️</button>
+                        <button className="btn-small-del" onClick={(e) => {
+                          e.stopPropagation();
+                          if (window.confirm('Are you sure you want to delete this question?')) {
+                            setQuestions(questions.filter(item => item.id !== q.id));
+                          }
+                        }}>🗑️</button>
+                      </div>
                     </div>
                   ))}
                 </div>
               )}
 
               <div className="form-actions">
-                <button type="button" className="publish-btn" onClick={handleCreateExam}>Publish Exam</button>
+                <div className="form-buttons">
+                  <button 
+                    type="button" 
+                    className="publish-btn" 
+                    onClick={editMode ? handleUpdateExam : handleCreateExam}
+                  >
+                    {editMode ? 'Update Exam' : 'Publish Exam'}
+                  </button>
+                  {editMode && (
+                    <button 
+                      type="button"
+                      className="cancel-edit-btn"
+                      onClick={() => {
+                        if (window.confirm('Cancel editing? All unsaved changes will be lost.')) {
+                          setEditMode(false);
+                          setEditingExamId(null);
+                          setActiveTab('exams');
+                        }
+                      }}
+                    >
+                      Cancel Edit
+                    </button>
+                  )}
+                </div>
               </div>
             </form>
           </div>
@@ -211,10 +413,45 @@ function Dashboard() {
           <div className="grading-section">
             <h2>Manual Grading</h2>
             <div className="submission-card">
-              <h4>Student: John Doe</h4>
-              <p>Answer: "An object stays at rest..."</p>
-              <input type="number" placeholder="Marks" />
-              <button className="grade-btn">Save Grade</button>
+              <h4>Student: Solomon Fentaw</h4>
+              <p><strong>Question:</strong> An object stays at rest or in uniform motion unless acted upon by an external force. This is known as:</p>
+              <p><strong>Answer:</strong> "Newton’s First Law of Motion (Law of Inertia)"</p>
+              <div className="grading-controls">
+                <div className="grade-input">
+                  <label htmlFor="grade">Grade (out of 10):</label>
+                  <input
+                    type="number" 
+                    id="grade"
+                    min="0" 
+                    max="10" 
+                    step="0.5"
+                    value={currentGrade}
+                    onChange={(e) => {
+                      setCurrentGrade(e.target.value);
+                      setSaveStatus('');
+                    }}
+                    placeholder="Enter grade" 
+                  />
+                </div>
+                <button 
+                  className="grade-btn" 
+                  onClick={handleSaveGrade}
+                  disabled={!currentGrade}
+                >
+                  Save Grade
+                </button>
+              </div>
+              {saveStatus && (
+                <div className={`save-status ${saveStatus.includes('success') ? 'success' : 'error'}`}>
+                  {saveStatus}
+                </div>
+              )}
+              {grades.solomon_fentaw?.physics_question_1 && (
+                <div className="previous-grade">
+                  <p>Previously graded: <strong>{grades.solomon_fentaw.physics_question_1.grade}/{grades.solomon_fentaw.physics_question_1.maxMarks}</strong></p>
+                  <p>Last updated: {new Date(grades.solomon_fentaw.physics_question_1.gradedAt).toLocaleString()}</p>
+                </div>
+              )}
             </div>
           </div>
         )}
