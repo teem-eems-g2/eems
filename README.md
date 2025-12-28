@@ -23,7 +23,7 @@ No React. No TypeScript. No fancy frameworks — just **pure JavaScript**, **HTM
 
 ## 🌱 The Idea Behind It
 
-I wanted to challenge myself by building a real web app **without frameworks**.
+We wanted to challenge ourselves by building a real web app **without frameworks**.
 
 The goal:
 
@@ -52,7 +52,7 @@ The goal:
 
 ---
 
-## 🛠️ Tech I Used
+## 🛠️ Tech We Used
 
 * **Frontend:** HTML, CSS, Vanilla JavaScript
 * **Backend:** Node.js, Express.js, JWT
@@ -92,7 +92,7 @@ No libraries. No frameworks. Just handcrafted code.
 
 ---
 
-## 💡 What I Learned
+## 💡 What We Learned
 
 * DOM manipulation, event handling, and writing modular JavaScript
 * Building custom form validation, routing, and AJAX calls
