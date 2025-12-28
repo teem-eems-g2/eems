@@ -57,7 +57,7 @@ export async function register(userData) {
       }
     }
 
-    const res = await fetch("http://localhost:3000/api/auth/register", {
+    const res = await fetch("https://eems-ozff.onrender.com/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userData),
@@ -81,11 +81,4 @@ export function logout() {
   localStorage.removeItem("token");
   alert("Logged out successfully.");
   window.location.href = "/";
-}
-
-{
-  /* <button id="logout-btn">Logout</button>
-document.getElementById("logout-btn").addEventListener("click", () => {
-  import("../api/auth.js").then((auth) => auth.logout());
-}); */
 }
