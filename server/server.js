@@ -7,14 +7,13 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ["https://mu-eems.vercel.app", "http://localhost:5173"], // Add your actual Vercel URL here
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
 app.use(express.json());
-
-app.get("/", (req, res) => {
-  res.send("Hello");
-});
-
-
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/exams", require("./routes/examRoutes"));
 app.use("/api/questions", require("./routes/questionRoutes"));
