@@ -2,7 +2,7 @@
  * API module for question-related operations
  */
 
-const API_BASE_URL = "http://localhost:3000/api/questions";
+const API_BASE_URL = "https://eems-ozff.onrender.com/api/questions";
 
 /**
  * Creates a new question for an exam

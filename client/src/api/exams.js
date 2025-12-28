@@ -2,7 +2,7 @@
  * API module for exam-related operations
  */
 
-const API_BASE_URL = "http://localhost:3000/api";
+const API_BASE_URL = "https://eems-ozff.onrender.com/api";
 
 /**
  * Fetch all exams

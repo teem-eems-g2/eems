@@ -2,7 +2,7 @@
  * API module for exam attempt-related operations
  */
 
-const API_BASE_URL = "http://localhost:3000/api/attempts";
+const API_BASE_URL = "https://eems-ozff.onrender.com/api/attempts";
 
 /**
  * Submit an exam attempt
