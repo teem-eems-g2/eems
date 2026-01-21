@@ -465,6 +465,132 @@
       "totalMarks": 10,
       "awarded": 10,
       "createdAt": "2026-01-21T04:30:57.669Z"
+    },
+    {
+      "id": 1768979297811,
+      "examId": 1768969785337,
+      "examTitle": "Matths",
+      "studentName": "jhon",
+      "perQuestion": [
+        {
+          "questionId": 1768969677529,
+          "questionText": "2+2 is ",
+          "type": "mcq",
+          "studentAnswer": "4",
+          "correctAnswer": "4",
+          "marks": 2,
+          "awarded": 2,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768969707306,
+          "questionText": "34-4 is 29",
+          "type": "truefalse",
+          "studentAnswer": true,
+          "marks": 2,
+          "awarded": 0,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768969731610,
+          "questionText": "3*4",
+          "type": "short",
+          "studentAnswer": "12",
+          "correctAnswer": "12",
+          "marks": 5,
+          "awarded": 5,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768969747719,
+          "questionText": "12/4",
+          "type": "numeric",
+          "studentAnswer": "2",
+          "correctAnswer": 3,
+          "marks": 1,
+          "awarded": 0,
+          "autoGraded": true
+        }
+      ],
+      "metadata": {
+        "startedAt": "2026-01-21T07:07:53.042Z",
+        "endedAt": "2026-01-21T07:08:17.763Z",
+        "durationSeconds": 600,
+        "perQuestionTimes": {
+          "1768969677529": 17,
+          "1768969707306": 10,
+          "1768969731610": 8,
+          "1768969747719": 14
+        },
+        "tabSwitchCount": 0,
+        "visibilityEvents": [
+          {
+            "at": "2026-01-21T04:31:10.765Z",
+            "visibility": "hidden"
+          }
+        ]
+      },
+      "totalMarks": 10,
+      "awarded": 7,
+      "createdAt": "2026-01-21T07:08:17.811Z"
+    },
+    {
+      "id": 1768980018952,
+      "examId": 1768957424037,
+      "examTitle": "GK",
+      "studentName": "zooma",
+      "perQuestion": [
+        {
+          "questionId": 1768957410048,
+          "questionText": "What is the capital of France?",
+          "type": "mcq",
+          "studentAnswer": "Paris",
+          "correctAnswer": "Paris",
+          "marks": 1,
+          "awarded": 1,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768957413442,
+          "questionText": "JS is awesome.",
+          "type": "truefalse",
+          "studentAnswer": true,
+          "correctAnswer": true,
+          "marks": 1,
+          "awarded": 1,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768957415814,
+          "questionText": "www",
+          "type": "short",
+          "studentAnswer": "www",
+          "correctAnswer": "www",
+          "marks": 5,
+          "awarded": 5,
+          "autoGraded": true
+        }
+      ],
+      "metadata": {
+        "startedAt": "2026-01-21T07:19:54.563Z",
+        "endedAt": "2026-01-21T07:20:18.944Z",
+        "durationSeconds": 600,
+        "perQuestionTimes": {
+          "1768957410048": 22,
+          "1768957413442": 10,
+          "1768957415814": 25
+        },
+        "tabSwitchCount": 0,
+        "visibilityEvents": [
+          {
+            "at": "2026-01-21T01:30:31.830Z",
+            "visibility": "hidden"
+          }
+        ]
+      },
+      "totalMarks": 7,
+      "awarded": 7,
+      "createdAt": "2026-01-21T07:20:18.952Z"
     }
   ],
   "users": [

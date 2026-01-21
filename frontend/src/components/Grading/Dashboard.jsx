@@ -84,18 +84,53 @@ function Dashboard() {
 
 // 1. Create a refresh toggle
 const [refreshTick, setRefreshTick] = useState(0);
+const [isRefreshing, setIsRefreshing] = useState(false);
+const [lastUpdate, setLastUpdate] = useState(new Date());
+
+// Auto-refresh mechanism for new submissions
+useEffect(() => {
+  const interval = setInterval(() => {
+    // Check for new submissions every 30 seconds when on reports tab
+    if (activeTab === 'reports') {
+      setRefreshTick(prev => prev + 1);
+    }
+  }, 30000); // 30 seconds
+
+  return () => clearInterval(interval);
+}, [activeTab]);
+
+// Listen for storage events (when new submission is added from another tab)
+useEffect(() => {
+  const handleStorageChange = (e) => {
+    if (e.key && e.key.startsWith('lastSubmission_')) {
+      // New submission was created, refresh reports
+      setRefreshTick(prev => prev + 1);
+    }
+  };
+
+  window.addEventListener('storage', handleStorageChange);
+  return () => window.removeEventListener('storage', handleStorageChange);
+}, []);
 
 // 2. Modified useEffect
 useEffect(() => {
   const loadSubmissions = async () => {
-    const res = await apiService.getSubmissions();
-    if (res?.success) {
-      setSubmissions(res.submissions || []);
+    setIsRefreshing(true);
+    try {
+      const res = await apiService.getSubmissions();
+      if (res?.success) {
+        setSubmissions(res.submissions || []);
+        setLastUpdate(new Date());
+      }
+    } catch (error) {
+      console.error('Failed to load submissions:', error);
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
-  // Runs on mount, when tab changes to grading, OR when we manually trigger refresh
-  if (activeTab === 'grading' || activeTab === 'dashboard') {
+  // Runs on mount, when tab changes to grading, reports, OR when we manually trigger refresh
+  if (activeTab === 'grading' || activeTab === 'dashboard' || activeTab === 'reports') {
     loadSubmissions();
   }
 }, [activeTab, refreshTick]); // Add refreshTick here
@@ -1044,7 +1079,23 @@ const viewSubmissionsForExam = (examId) => {
 
         {activeTab === 'reports' && (
           <div className="reports-section">
-            <h2>📊 Reports & Analytics</h2>
+            <div className="reports-header">
+              <div className="reports-title">
+                <h2>📊 Reports & Analytics</h2>
+                <span className="last-update">
+                  Last updated: {lastUpdate.toLocaleTimeString()}
+                  {isRefreshing && <span className="refreshing-indicator"> 🔄 Updating...</span>}
+                </span>
+              </div>
+              <button 
+                className={`refresh-reports-btn ${isRefreshing ? 'refreshing' : ''}`}
+                onClick={() => setRefreshTick(prev => prev + 1)}
+                title="Refresh Reports Data"
+                disabled={isRefreshing}
+              >
+                {isRefreshing ? '🔄 Updating...' : '🔄 Refresh'}
+              </button>
+            </div>
             
             {/* Key Performance Indicators */}
             <div className="kpi-grid">
