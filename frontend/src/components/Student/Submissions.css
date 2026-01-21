@@ -1,0 +1,266 @@
+.submissions-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.submissions-container h2 {
+  color: #333;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.no-submissions {
+  text-align: center;
+  padding: 60px 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+.no-submissions p {
+  color: #6c757d;
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+.submissions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.submission-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border: 1px solid #e9ecef;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.submission-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.submission-card h3 {
+  color: #495057;
+  margin: 0 0 15px 0;
+  font-size: 18px;
+}
+
+.submission-info p {
+  margin: 8px 0;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.submission-info strong {
+  color: #495057;
+}
+
+.submission-metadata {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e9ecef;
+}
+
+.view-details-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 15px;
+  width: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.view-details-btn:hover {
+  background: #0056b3;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.submission-modal {
+  background: white;
+  border-radius: 12px;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  margin: 20px;
+  width: calc(100% - 40px);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px 0;
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+.submission-summary {
+  display: flex;
+  gap: 30px;
+  padding: 0 20px 20px;
+  align-items: flex-start;
+}
+
+.score-circle {
+  text-align: center;
+  min-width: 120px;
+}
+
+.score-circle h2 {
+  margin: 0;
+  font-size: 32px;
+  color: #28a745;
+}
+
+.score-circle p {
+  margin: 5px 0 0 0;
+  font-size: 18px;
+  color: #6c757d;
+}
+
+.metadata-info {
+  flex: 1;
+}
+
+.metadata-info h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.metadata-info p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.questions-review {
+  padding: 0 20px 20px;
+}
+
+.questions-review h4 {
+  margin: 0 0 20px 0;
+  color: #333;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 10px;
+}
+
+.question-review {
+  margin-bottom: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #6c757d;
+}
+
+.question-review.correct {
+  background: #d4edda;
+  border-left-color: #28a745;
+}
+
+.question-review.incorrect {
+  background: #f8d7da;
+  border-left-color: #dc3545;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.question-header strong {
+  color: #333;
+  flex: 1;
+}
+
+.question-marks {
+  background: #007bff;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.answer-comparison {
+  margin: 10px 0;
+}
+
+.answer-comparison p {
+  margin: 5px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.grading-info {
+  margin-top: 10px;
+}
+
+.auto-graded {
+  background: #28a745;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  .submissions-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .submission-summary {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .submission-modal {
+    margin: 10px;
+    width: calc(100% - 20px);
+  }
+}

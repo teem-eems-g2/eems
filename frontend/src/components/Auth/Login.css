@@ -63,3 +63,23 @@
   margin-top: 0;
   color: #2c3e50;
 }
+
+.remember-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toggle-auth {
+  margin-top: 8px;
+  border: none;
+  background: transparent;
+  color: #3498db;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 6px 0;
+}
+
+.toggle-auth:hover {
+  color: #1d6fa5;
+}

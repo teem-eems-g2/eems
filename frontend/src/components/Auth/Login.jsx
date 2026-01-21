@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import apiService from '../../services/apiService';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
@@ -6,46 +7,57 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('student');
+  const [isSignup, setIsSignup] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [remember, setRemember] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  // prefill remembered email
+  React.useEffect(() => {
+    const saved = localStorage.getItem('rememberedEmail');
+    if (saved) setEmail(saved);
+  }, []);
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    
-    // Simple validation
-    if (!email || !password) {
-      alert('Please enter both email and password');
-      return;
-    }
-    
-    // Mock user database
-    const users = {
-      'student@test.com': { password: 'student123', role: 'student' },
-      'instructor@test.com': { password: 'instructor123', role: 'instructor' },
-      'grader@test.com': { password: 'grader123', role: 'grader' },
-      'admin@test.com': { password: 'admin123', role: 'admin' }
+    if (!email || !password) return alert('Please enter both email and password');
+
+    // Validate role matches email domain
+    const getRoleFromEmail = (email) => {
+      if (email.includes('instructor@test.com')) return 'instructor';
+      if (email.includes('grader@test.com')) return 'grader';
+      if (email.includes('admin@test.com')) return 'admin';
+      return 'student';
     };
-    
-    // Check if user exists and password matches
-    const user = users[email];
-    if (!user || user.password !== password) {
-      alert('Invalid email or password');
-      return;
+
+    const expectedRole = getRoleFromEmail(email);
+    if (role !== expectedRole) {
+      return alert(`Role mismatch! For email "${email}", you should select role: "${expectedRole}". Current selection: "${role}"`);
     }
-    
-    // Verify the selected role matches the user's actual role
-    if (user.role !== role) {
-      alert(`Please select the correct role (${user.role}) for this account`);
-      return;
-    }
-    
-    // Save user to localStorage
-    localStorage.setItem('user', JSON.stringify({ email, role: user.role }));
-    
-    // Redirect based on role
-    if (user.role === 'student') {
-      navigate('/exams');
-    } else {
-      navigate('/dashboard');
+
+    try {
+      const data = await apiService.login(email, password);
+      if (!data || !data.success) {
+        console.log('Login failed - Response:', data);
+        return alert(data?.message || 'Login failed');
+      }
+      
+      // Store user data and token
+      localStorage.setItem('user', JSON.stringify(data.user));
+      if (data.token) localStorage.setItem('token', data.token);
+      if (remember) localStorage.setItem('rememberedEmail', email); else localStorage.removeItem('rememberedEmail');
+      
+      // Simple role-based routing
+      if (data.user.role === 'instructor' || data.user.role === 'grader' || data.user.role === 'admin') {
+        console.log('Instructor/Grader/Admin login successful, going to dashboard');
+        navigate('/dashboard');
+      } else {
+        console.log('Student login successful, going to exams');
+        navigate('/exams');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      alert('Login failed');
     }
   };
 
@@ -84,17 +96,30 @@ function Login() {
             <option value="admin">Admin</option>
           </select>
         </div>
+
+        {isSignup && (
+          <div className="form-group">
+            <label>Confirm Password:</label>
+            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required placeholder="Confirm password" />
+          </div>
+        )}
+
+        <div className="form-group remember-row">
+          <label><input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} /> Remember my email</label>
+        </div>
         
-        <button type="submit" className="login-btn">Login</button>
+        <button type="submit" className="login-btn">{isSignup ? 'Sign Up' : 'Login'}</button>
       </form>
-      
       <div className="demo-credentials">
-        <h4>Demo Credentials:</h4>
+        <h4>🎓 Simple Login Access:</h4>
         <p><strong>Instructor:</strong> instructor@test.com / instructor123</p>
         <p><strong>Student:</strong> student@test.com / student123</p>
         <p><strong>Grader:</strong> grader@test.com / grader123</p>
         <p><strong>Admin:</strong> admin@test.com / admin123</p>
-        <p className="note">Note: Passwords are now required and must match the demo credentials.</p>
+        <p className="note">✅ Instructors/Graders/Admins go to <strong>Dashboard</strong> | Students go to <strong>Exams</strong></p>
+      </div>
+      <div style={{marginTop: 12}}>
+        <button onClick={() => setIsSignup(prev => !prev)} className="toggle-auth">{isSignup ? 'Have an account? Sign in' : 'Create an account'}</button>
       </div>
     </div>
   );

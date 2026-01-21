@@ -4,6 +4,7 @@ import Login from './components/Auth/Login';
 import Dashboard from './components/Grading/Dashboard';
 import ExamInterface from './components/Exam/ExamInterface';
 import ExamList from './components/Exam/ExamList';
+import Submissions from './components/Student/Submissions';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import './App.css';
 
@@ -29,6 +30,15 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['student']}>
                 <ExamList />
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="/submissions" 
+            element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <Submissions />
               </ProtectedRoute>
             } 
           />

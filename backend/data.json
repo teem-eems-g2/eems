@@ -1,0 +1,520 @@
+{
+  "exams": [
+    {
+      "id": 1768957424037,
+      "title": "GK",
+      "duration": 10,
+      "totalMarks": 7,
+      "questions": [
+        {
+          "id": 1768957410048,
+          "type": "mcq",
+          "text": "What is the capital of France?",
+          "options": [
+            "London",
+            "Berlin",
+            "Paris",
+            "Madrid"
+          ],
+          "correct": "Paris",
+          "marks": 1
+        },
+        {
+          "id": 1768957413442,
+          "type": "truefalse",
+          "text": "JS is awesome.",
+          "correct": true,
+          "marks": 1
+        },
+        {
+          "id": 1768957415814,
+          "type": "short",
+          "text": "www",
+          "answer": "www",
+          "marks": 5
+        }
+      ],
+      "createdBy": "instructor@test.com",
+      "createdAt": "2026-01-21T01:03:45.536Z"
+    },
+    {
+      "id": 1768957884092,
+      "title": "English",
+      "duration": 10,
+      "totalMarks": 9,
+      "questions": [
+        {
+          "id": 1768957785659,
+          "type": "mcq",
+          "text": "he   football.",
+          "options": [
+            "play",
+            "plays",
+            "played",
+            "playing"
+          ],
+          "correct": "plays",
+          "marks": 3
+        },
+        {
+          "id": 1768957819847,
+          "type": "truefalse",
+          "text": "he is watching tennis. is correct grammer?",
+          "correct": true,
+          "marks": 1
+        },
+        {
+          "id": 1768957854985,
+          "type": "short",
+          "text": "who stands for",
+          "answer": "world health organization",
+          "marks": 5
+        }
+      ],
+      "createdBy": "instructor@test.com",
+      "createdAt": "2026-01-21T01:11:25.490Z"
+    },
+    {
+      "id": 1768969785337,
+      "title": "Matths",
+      "duration": 10,
+      "totalMarks": 10,
+      "questions": [
+        {
+          "id": 1768969677529,
+          "type": "mcq",
+          "text": "2+2 is ",
+          "options": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "correct": "4",
+          "marks": 2
+        },
+        {
+          "id": 1768969707306,
+          "type": "truefalse",
+          "text": "34-4 is 29",
+          "correct": false,
+          "marks": 2
+        },
+        {
+          "id": 1768969731610,
+          "type": "short",
+          "text": "3*4",
+          "answer": "12",
+          "marks": 5
+        },
+        {
+          "id": 1768969747719,
+          "type": "numeric",
+          "text": "12/4",
+          "correct": 3,
+          "marks": 1
+        }
+      ],
+      "createdBy": "instructor@test.com",
+      "createdAt": "2026-01-21T04:29:46.990Z"
+    }
+  ],
+  "submissions": [
+    {
+      "id": 1,
+      "examId": 1,
+      "examTitle": "English",
+      "studentName": "jo",
+      "perQuestion": [
+        {
+          "questionId": 1768955803582,
+          "questionText": "he __football.",
+          "type": "mcq",
+          "studentAnswer": "plays",
+          "correctAnswer": "plays",
+          "marks": 3,
+          "awarded": 1,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768955844638,
+          "questionText": "football has most funs than cricket. is this correct in grammer?",
+          "type": "truefalse",
+          "studentAnswer": true,
+          "correctAnswer": true,
+          "marks": 1,
+          "awarded": 1,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768955892381,
+          "questionText": "www stands for",
+          "type": "short",
+          "studentAnswer": "worl wide web",
+          "correctAnswer": "worl wide web",
+          "marks": 5,
+          "awarded": 5,
+          "autoGraded": true
+        }
+      ],
+      "metadata": {
+        "startedAt": "2026-01-21T00:39:07.116Z",
+        "endedAt": "2026-01-21T00:39:29.860Z",
+        "durationSeconds": 600,
+        "perQuestionTimes": {
+          "1768955803582": 5,
+          "1768955844638": 7,
+          "1768955892381": 6
+        },
+        "tabSwitchCount": 1,
+        "visibilityEvents": []
+      },
+      "totalMarks": 9,
+      "awarded": 7,
+      "createdAt": "2026-01-21T00:39:29.868Z"
+    },
+    {
+      "id": 2,
+      "examId": 1768957424037,
+      "examTitle": "GK",
+      "studentName": "ora",
+      "perQuestion": [
+        {
+          "questionId": 1768957410048,
+          "questionText": "What is the capital of France?",
+          "type": "mcq",
+          "studentAnswer": "Paris",
+          "correctAnswer": "Paris",
+          "marks": 1,
+          "awarded": 1,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768957413442,
+          "questionText": "JS is awesome.",
+          "type": "truefalse",
+          "studentAnswer": false,
+          "correctAnswer": true,
+          "marks": 1,
+          "awarded": 0,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768957415814,
+          "questionText": "www",
+          "type": "short",
+          "studentAnswer": "www",
+          "correctAnswer": "www",
+          "marks": 5,
+          "awarded": 5,
+          "autoGraded": false
+        }
+      ],
+      "metadata": {
+        "startedAt": "2026-01-21T01:04:39.061Z",
+        "endedAt": "2026-01-21T01:04:56.062Z",
+        "durationSeconds": 600,
+        "perQuestionTimes": {
+          "1768957410048": 6,
+          "1768957413442": 4,
+          "1768957415814": 3
+        },
+        "tabSwitchCount": 0,
+        "visibilityEvents": []
+      },
+      "totalMarks": 7,
+      "awarded": 6,
+      "createdAt": "2026-01-21T01:04:56.087Z"
+    },
+    {
+      "id": 3,
+      "examId": 1768957884092,
+      "examTitle": "English",
+      "studentName": "soal",
+      "perQuestion": [
+        {
+          "questionId": 1768957785659,
+          "questionText": "he   football.",
+          "type": "mcq",
+          "studentAnswer": "plays",
+          "correctAnswer": "plays",
+          "marks": 3,
+          "awarded": 3,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768957819847,
+          "questionText": "he is watching tennis. is correct grammer?",
+          "type": "truefalse",
+          "studentAnswer": true,
+          "correctAnswer": true,
+          "marks": 1,
+          "awarded": 1,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768957854985,
+          "questionText": "who stands for",
+          "type": "short",
+          "studentAnswer": "world health organization",
+          "correctAnswer": "world health organization",
+          "marks": 5,
+          "awarded": 5,
+          "autoGraded": false
+        }
+      ],
+      "metadata": {
+        "startedAt": "2026-01-21T01:12:40.321Z",
+        "endedAt": "2026-01-21T01:13:17.614Z",
+        "durationSeconds": 600,
+        "perQuestionTimes": {
+          "1768957785659": 5,
+          "1768957819847": 2,
+          "1768957854985": 23
+        },
+        "tabSwitchCount": 0,
+        "visibilityEvents": []
+      },
+      "totalMarks": 9,
+      "awarded": 9,
+      "createdAt": "2026-01-21T01:13:17.634Z"
+    },
+    {
+      "id": 4,
+      "examId": 1768957424037,
+      "examTitle": "GK",
+      "studentName": "soool",
+      "perQuestion": [
+        {
+          "questionId": 1768957410048,
+          "questionText": "What is the capital of France?",
+          "type": "mcq",
+          "studentAnswer": "Paris",
+          "correctAnswer": "Paris",
+          "marks": 1,
+          "awarded": 1,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768957413442,
+          "questionText": "JS is awesome.",
+          "type": "truefalse",
+          "studentAnswer": true,
+          "correctAnswer": true,
+          "marks": 1,
+          "awarded": 1,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768957415814,
+          "questionText": "www",
+          "type": "short",
+          "studentAnswer": "www",
+          "correctAnswer": "www",
+          "marks": 5,
+          "awarded": 5,
+          "autoGraded": true
+        }
+      ],
+      "metadata": {
+        "startedAt": "2026-01-21T01:29:59.751Z",
+        "endedAt": "2026-01-21T01:30:22.344Z",
+        "durationSeconds": 600,
+        "perQuestionTimes": {
+          "1768957410048": 14,
+          "1768957413442": 7,
+          "1768957415814": 14
+        },
+        "tabSwitchCount": 0,
+        "visibilityEvents": [
+          {
+            "at": "2026-01-21T01:05:11.962Z",
+            "visibility": "hidden"
+          }
+        ]
+      },
+      "totalMarks": 7,
+      "awarded": 7,
+      "createdAt": "2026-01-21T01:30:22.352Z"
+    },
+    {
+      "id": 5,
+      "examId": 1768957884092,
+      "examTitle": "English",
+      "studentName": "dana",
+      "perQuestion": [
+        {
+          "questionId": 1768957785659,
+          "questionText": "he   football.",
+          "type": "mcq",
+          "studentAnswer": "plays",
+          "correctAnswer": "plays",
+          "marks": 3,
+          "awarded": 3,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768957819847,
+          "questionText": "he is watching tennis. is correct grammer?",
+          "type": "truefalse",
+          "studentAnswer": true,
+          "correctAnswer": true,
+          "marks": 1,
+          "awarded": 1,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768957854985,
+          "questionText": "who stands for",
+          "type": "short",
+          "studentAnswer": "world health organization",
+          "correctAnswer": "world health organization",
+          "marks": 5,
+          "awarded": 5,
+          "autoGraded": true
+        }
+      ],
+      "metadata": {
+        "startedAt": "2026-01-21T01:33:13.785Z",
+        "endedAt": "2026-01-21T01:33:49.464Z",
+        "durationSeconds": 600,
+        "perQuestionTimes": {
+          "1768957785659": 12,
+          "1768957819847": 5,
+          "1768957854985": 44
+        },
+        "tabSwitchCount": 0,
+        "visibilityEvents": [
+          {
+            "at": "2026-01-21T01:13:37.819Z",
+            "visibility": "hidden"
+          },
+          {
+            "at": "2026-01-21T01:13:39.670Z",
+            "visibility": "visible"
+          },
+          {
+            "at": "2026-01-21T01:13:42.925Z",
+            "visibility": "hidden"
+          }
+        ]
+      },
+      "totalMarks": 9,
+      "awarded": 9,
+      "createdAt": "2026-01-21T01:33:49.490Z"
+    },
+    {
+      "id": 1768969857669,
+      "examId": 1768969785337,
+      "examTitle": "Matths",
+      "studentName": "ezana",
+      "perQuestion": [
+        {
+          "questionId": 1768969677529,
+          "questionText": "2+2 is ",
+          "type": "mcq",
+          "studentAnswer": "4",
+          "correctAnswer": "4",
+          "marks": 2,
+          "awarded": 2,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768969707306,
+          "questionText": "34-4 is 29",
+          "type": "truefalse",
+          "studentAnswer": false,
+          "marks": 2,
+          "awarded": 2,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768969731610,
+          "questionText": "3*4",
+          "type": "short",
+          "studentAnswer": "12",
+          "correctAnswer": "12",
+          "marks": 5,
+          "awarded": 5,
+          "autoGraded": true
+        },
+        {
+          "questionId": 1768969747719,
+          "questionText": "12/4",
+          "type": "numeric",
+          "studentAnswer": "3",
+          "correctAnswer": 3,
+          "marks": 1,
+          "awarded": 1,
+          "autoGraded": true
+        }
+      ],
+      "metadata": {
+        "startedAt": "2026-01-21T04:30:30.694Z",
+        "endedAt": "2026-01-21T04:30:57.659Z",
+        "durationSeconds": 600,
+        "perQuestionTimes": {
+          "1768969677529": 10,
+          "1768969707306": 4,
+          "1768969731610": 5,
+          "1768969747719": 5
+        },
+        "tabSwitchCount": 0,
+        "visibilityEvents": []
+      },
+      "totalMarks": 10,
+      "awarded": 10,
+      "createdAt": "2026-01-21T04:30:57.669Z"
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "email": "instructor@test.com",
+      "password": "$2b$10$m7ZC0crHMrHaQDUvTOOFyOFnyNWH20wS9kNJtmekWG.0.PA0iWlT2",
+      "role": "instructor"
+    },
+    {
+      "id": 2,
+      "email": "student@test.com",
+      "password": "$2b$10$pz.8aqXD/8D1js7IMruj.OjDjRRdVYKZvdo41A9yYIwND/dOS03hO",
+      "role": "student"
+    },
+    {
+      "id": 3,
+      "email": "grader@test.com",
+      "password": "$2b$10$RZZyKvkQmEYMMaqQUoXwKOapfyOfORUk.BQ8g4/Ps4HEU/u7zvyQ.",
+      "role": "grader"
+    },
+    {
+      "id": 4,
+      "email": "admin@test.com",
+      "password": "$2b$10$fCLaYNsvWnzlpxLagxvjVuKu4s/W8e5NI/zXinhP4IE.mBU3KROGy",
+      "role": "admin"
+    },
+    {
+      "id": 5,
+      "email": "newuser@test.com",
+      "password": "$2b$10$EsN8JBlCl7qlJ1DZ3JoGgOAU3m2dINtRkxq6loqCRdNw48LMjIr0.",
+      "role": "student"
+    },
+    {
+      "id": 6,
+      "email": "kalilhida24@gmail.com",
+      "password": "$2b$10$a1RaILGJXgF/.c642IaXVuR5ngsFVidDpfMK6QrTEaag8dlhKRgJm",
+      "role": "student"
+    },
+    {
+      "id": 7,
+      "email": "uiuser@test.com",
+      "password": "$2b$10$3QAh6LoDM5NcH9ZGh.76du4GWnqBRCuPUOrgNNpPR9kMB7SO5Vr96",
+      "role": "student"
+    },
+    {
+      "id": 8,
+      "email": "fixuser@test.com",
+      "password": "$2b$10$lyrlp5pTstkTG4DBPqmXtuzWqIPKI8ZHhUr8MXge5U6JRR4tOy/Ly",
+      "role": "instructor"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import apiService from '../../services/apiService';
+import { useNavigate, Link } from 'react-router-dom';
 import './ExamList.css';
 
 function ExamList() {
@@ -8,10 +9,21 @@ function ExamList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Load available exams from localStorage
+    // Start with localStorage exams as default
     const savedExams = JSON.parse(localStorage.getItem('allExams') || '[]');
     setExams(savedExams);
-    setLoading(false);
+    
+    // Try to load exams from backend, but only use if it has data
+    apiService.getExams().then(res => {
+      if (res && res.success && res.exams && res.exams.length > 0) {
+        // Only use backend data if it actually has exams
+        setExams(res.exams);
+        localStorage.setItem('allExams', JSON.stringify(res.exams));
+      }
+      // If backend returns empty, keep local exams
+    }).catch(() => {
+      // Keep local exams on error
+    }).finally(() => setLoading(false));
   }, []);
 
   const handleStartExam = (exam) => {
@@ -25,7 +37,12 @@ function ExamList() {
 
   return (
     <div className="exam-list-container">
-      <h2>Available Exams</h2>
+      <div className="exam-list-header">
+        <h2>Available Exams</h2>
+        <Link to="/submissions" className="view-submissions-link">
+          📝 View My Submissions
+        </Link>
+      </div>
       {exams.length === 0 ? (
         <p>No exams available at the moment. Please check back later.</p>
       ) : (

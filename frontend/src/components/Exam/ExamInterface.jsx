@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import apiService from '../../services/apiService';
 import { useParams, useNavigate } from 'react-router-dom';
 import './ExamInterface.css';
 
@@ -11,6 +12,14 @@ function ExamInterface() {
   const [studentName, setStudentName] = useState(() => {
     return localStorage.getItem('studentName') || '';
   });
+  const [startedAt, setStartedAt] = useState(null);
+  const [endedAt, setEndedAt] = useState(null);
+  const [perQuestionTimes, setPerQuestionTimes] = useState(() => {
+    return JSON.parse(localStorage.getItem(`perQuestionTimes_${examId}`) || '{}');
+  });
+  const [questionStartTime, setQuestionStartTime] = useState(null);
+  const [tabSwitchCount, setTabSwitchCount] = useState(0);
+  const [visibilityEvents, setVisibilityEvents] = useState([]);
   const [showNameInput, setShowNameInput] = useState(!studentName);
   const [finalScore, setFinalScore] = useState(0);
   const [answers, setAnswers] = useState(() => {
@@ -37,6 +46,10 @@ function ExamInterface() {
           // Load saved answers for this specific exam
           const savedAnswers = JSON.parse(localStorage.getItem(`examAnswers_${examId}`) || '{}');
           setAnswers(savedAnswers);
+          // mark start time and question start
+          const now = Date.now();
+          setStartedAt(new Date(now).toISOString());
+          setQuestionStartTime(now);
         } else {
           setError('Exam not found');
         }
@@ -56,6 +69,27 @@ function ExamInterface() {
     }
   }, [examId]);
 
+  // Track visibility and focus to detect tab switches
+  useEffect(() => {
+    const handleVisibility = () => {
+      const ev = { at: new Date().toISOString(), visibility: document.visibilityState };
+      setVisibilityEvents(prev => { const next = [...prev, ev]; localStorage.setItem(`visibilityEvents_${examId}`, JSON.stringify(next)); return next; });
+      if (document.visibilityState === 'hidden') {
+        setTabSwitchCount(prev => prev + 1);
+      }
+    };
+
+    const handleBlur = () => setTabSwitchCount(prev => prev + 1);
+
+    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener('blur', handleBlur);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('blur', handleBlur);
+    };
+  }, [examId]);
+
   // Timer Effect
   useEffect(() => {
     // Stop timer if submitted or time runs out
@@ -72,6 +106,18 @@ function ExamInterface() {
 
   const handleAnswer = (questionId, answer) => {
     if (isSubmitted) return; // Prevent changing answers after submit
+    // before changing question store time for current question
+    const now = Date.now();
+    if (questionStartTime) {
+      const elapsed = Math.round((now - questionStartTime) / 1000);
+      setPerQuestionTimes(prev => {
+        const next = { ...prev, [questionId]: (prev[questionId] || 0) + elapsed };
+        localStorage.setItem(`perQuestionTimes_${examId}`, JSON.stringify(next));
+        return next;
+      });
+      setQuestionStartTime(now);
+    }
+
     const newAnswers = { ...answers, [questionId]: answer };
     setAnswers(newAnswers);
     // Save answers for this specific exam
@@ -102,6 +148,49 @@ function ExamInterface() {
     
     setFinalScore(score);
     setIsSubmitted(true); // Stop the timer and change view
+
+    // finalize timing data for current question
+    const now = Date.now();
+    if (questionStartTime) {
+      const elapsed = Math.round((now - questionStartTime) / 1000);
+      setPerQuestionTimes(prev => {
+        const next = { ...prev };
+        // assign elapsed to current question index
+        const currentQ = questions[currentQuestion];
+        if (currentQ) {
+          next[currentQ.id] = (next[currentQ.id] || 0) + elapsed;
+        }
+        localStorage.setItem(`perQuestionTimes_${examId}`, JSON.stringify(next));
+        return next;
+      });
+    }
+    setEndedAt(new Date(now).toISOString());
+
+    // Send submission to backend for storage and any additional grading
+    const payload = {
+      studentName: studentName || 'Anonymous',
+      examId: examData.id,
+      answers,
+      metadata: {
+        startedAt,
+        endedAt: new Date().toISOString(),
+        durationSeconds: examData.duration * 60,
+        perQuestionTimes: JSON.parse(localStorage.getItem(`perQuestionTimes_${examId}`) || '{}'),
+        tabSwitchCount: tabSwitchCount,
+        visibilityEvents: JSON.parse(localStorage.getItem(`visibilityEvents_${examId}`) || '[]')
+      }
+    };
+    // Include the exam payload so backend can accept submissions even if it doesn't already have the exam stored
+    payload.exam = examData;
+
+    apiService.createSubmission(payload).then(res => {
+      if (res && res.success && res.submission) {
+        // replace local submission answers with server-rich submission if needed
+        localStorage.setItem(`lastSubmission_${examId}`, JSON.stringify(res.submission));
+      }
+    }).catch(() => {
+      // ignore; local result remains
+    });
 
     // Clear local storage progress and student name
     localStorage.removeItem(`examAnswers_${examId}`);
@@ -183,7 +272,6 @@ function ExamInterface() {
           <h1>{finalScore} / {examData.totalMarks}</h1>
           <p>Total Marks Earned</p>
         </div>
-        
         {hasAutoGraded && (
           <div className="auto-graded-section">
             <h3>Auto-graded Short Answers</h3>
@@ -198,13 +286,38 @@ function ExamInterface() {
             ))}
           </div>
         )}
-        
-        {autoGradedShortAnswers.some(q => !q.isCorrect) && (
-          <div className="manual-review-section">
-            <h3>Pending Review</h3>
-            <p>Some of your answers need instructor review.</p>
-          </div>
-        )}
+
+        {/* Server-side submission details if available */}
+        {(() => {
+          const serverSubmission = JSON.parse(localStorage.getItem(`lastSubmission_${examId}`) || 'null');
+          if (serverSubmission) {
+            return (
+              <div className="submission-details">
+                <h3>Submission Details</h3>
+                <p><strong>Student:</strong> {serverSubmission.studentName}</p>
+                <p><strong>Score:</strong> {serverSubmission.awarded} / {serverSubmission.totalMarks}</p>
+                <div className="per-question-list">
+                  {serverSubmission.perQuestion.map((p, idx) => (
+                    <div key={idx} className={`per-question ${p.awarded > 0 ? 'correct' : 'incorrect'}`}>
+                      <p><strong>Q:</strong> {p.questionText}</p>
+                      <p><strong>Your answer:</strong> {String(p.studentAnswer)}</p>
+                      <p><strong>Correct answer:</strong> {String(p.correctAnswer)}</p>
+                      <p><strong>Awarded:</strong> {p.awarded} / {p.marks}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          }
+          return (
+            autoGradedShortAnswers.some(q => !q.isCorrect) && (
+              <div className="manual-review-section">
+                <h3>Pending Review</h3>
+                <p>Some of your answers need instructor review.</p>
+              </div>
+            )
+          );
+        })()}
         
         <button className="logout-btn" onClick={handleLogout}>Logout & Exit</button>
       </div>
